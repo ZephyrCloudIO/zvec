@@ -79,6 +79,14 @@ zvec_status_t zvec_create_and_open(const char* path,
 
 zvec_status_t zvec_open(const char* path, zvec_collection_t* out);
 
+/**
+ * Open an existing collection in read-only mode.
+ *
+ * Multiple read-only handles can coexist with one active writer.
+ * Write APIs invoked through this handle will return read-only errors.
+ */
+zvec_status_t zvec_open_read_only(const char* path, zvec_collection_t* out);
+
 /** Release the in-memory handle without deleting on-disk data. */
 void zvec_collection_free(zvec_collection_t col);
 

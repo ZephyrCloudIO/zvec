@@ -451,6 +451,22 @@ zvec_status_t zvec_open(const char* path, zvec_collection_t* out) {
   }
 }
 
+zvec_status_t zvec_open_read_only(const char* path, zvec_collection_t* out) {
+  if (!path || !out)
+    return make_error(Status::InvalidArgument("null argument"));
+  try {
+    CollectionOptions options{};
+    options.read_only_ = true;
+    auto result = Collection::Open(path, options);
+    if (!result) return make_error(result.error());
+    *out = static_cast<zvec_collection_t>(
+        new Collection::Ptr(std::move(*result)));
+    return make_ok();
+  } catch (const std::exception& e) {
+    return make_exception_error(e);
+  }
+}
+
 void zvec_collection_free(zvec_collection_t col) {
   delete static_cast<Collection::Ptr*>(col);
 }
