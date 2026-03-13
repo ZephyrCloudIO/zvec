@@ -191,7 +191,7 @@ TEST_F(CollectionTest, Feature_LockFdIsNotInheritedAcrossExec) {
   auto schema = TestHelper::CreateNormalSchema();
   auto created = Collection::CreateAndOpen(col_path, *schema, options);
   ASSERT_TRUE(created.has_value());
-  auto collection = created.value();
+  auto collection = std::move(created.value());
 
   pid_t pid = fork();
   ASSERT_GE(pid, 0);
