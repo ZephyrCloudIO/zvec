@@ -21,8 +21,6 @@ include(${PROJECT_ROOT_DIR}/cmake/bazel.cmake)
 
 include_directories(${PROJECT_ROOT_DIR}/src/include)
 include_directories(${PROJECT_ROOT_DIR}/src)
-# Add generated headers to global include path
-include_directories(${PROJECT_BINARY_DIR}/src/generated)
 
 option(BUILD_PYTHON_BINDINGS "Build Python bindings using pybind11" OFF)
 message(STATUS "BUILD_PYTHON_BINDINGS:${BUILD_PYTHON_BINDINGS}")
