@@ -122,7 +122,7 @@ if(APPLE)
             Threads::Threads
             ${CMAKE_DL_LIBS}
     )
-    
+
     # Then, apply -force_load to ensure all symbols are included
     # Note: This may cause duplicate library warnings, but they are harmless
     target_link_options(zvec_c_api PRIVATE
@@ -139,6 +139,34 @@ if(APPLE)
         -Wl,-force_load,$<TARGET_FILE:glog>
         -Wl,-force_load,$<TARGET_FILE:libprotobuf>
         -Wl,-force_load,$<TARGET_FILE:antlr4>
+    )
+
+elseif(MSVC)
+    # MSVC: /WHOLEARCHIVE only for internal static libs (zvec_db, zvec_core, zvec_ailego).
+    # Third-party deps may be DLLs (roaring, glog, libprotobuf) so link them normally.
+    target_link_libraries(zvec_c_api
+        PRIVATE
+            zvec_db
+            zvec_core
+            zvec_ailego
+            roaring
+            Arrow::arrow_static
+            Arrow::parquet_static
+            Arrow::arrow_compute
+            Arrow::arrow_dataset
+            Arrow::arrow_acero
+            rocksdb
+            glog
+            libprotobuf
+            antlr4
+            sparsehash
+            magic_enum
+            Threads::Threads
+    )
+    target_link_options(zvec_c_api PRIVATE
+        /WHOLEARCHIVE:zvec_db
+        /WHOLEARCHIVE:zvec_core
+        /WHOLEARCHIVE:zvec_ailego
     )
 
 else()
@@ -179,6 +207,9 @@ target_include_directories(zvec_c_api
     PRIVATE
         ${PROJECT_SOURCE_DIR}/src
 )
+
+# Define ZVEC_BUILD_SHARED so c_api.h uses __declspec(dllexport) on Windows
+target_compile_definitions(zvec_c_api PRIVATE ZVEC_BUILD_SHARED)
 
 # Compile options
 target_compile_options(zvec_c_api PRIVATE
